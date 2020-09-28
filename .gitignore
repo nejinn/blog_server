@@ -1,0 +1,15 @@
+.idea/*
+.vscode/*
+venv/*
+__pycache__/*
+
+blog_context/__pycache__/*
+blog_context/migrations/*
+
+blog_user/__pycache__/*
+blog_user/migrations/*
+blog_user/utils/__pycache__/*
+
+utils/__pycache__/*
+utils/response_data/__pycache__/*
+utils/response_msg/__pycache__/*
