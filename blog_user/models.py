@@ -6,9 +6,11 @@ from enum import Enum
 # Create your models here.
 
 class BaseModel(models.Model):
-    create_data = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
-    update_data = models.DateTimeField(verbose_name='修改时间', auto_now=True)
+    create_date = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
+    update_date = models.DateTimeField(verbose_name='修改时间', auto_now=True)
     is_delete = models.BooleanField(verbose_name='删除', default=False)
+    create_id = models.IntegerField(verbose_name='创建人', blank=True, null=True, default=None)
+    update_id = models.IntegerField(verbose_name='更新人', blank=True, null=True, default=None)
 
     class Meta:
         abstract = True
@@ -24,7 +26,7 @@ class BlogUser(BaseModel):
         UserType.base_user: "普通用户"
     }
 
-    base_user = models.OneToOneField(User, on_delete=models.CASCADE)
+    base_user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='base_user_obj')
     user_pic = models.ImageField(verbose_name='用户头像', help_text='用户头像')
     user_type = models.IntegerField(verbose_name='用户类型', default=UserType.base_user.value,
                                     help_text='用户类型，base_user 无法登陆 admin端', blank=True, null=True)

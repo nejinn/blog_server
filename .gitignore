@@ -13,3 +13,15 @@ blog_user/utils/__pycache__/*
 utils/__pycache__/*
 utils/response_data/__pycache__/*
 utils/response_msg/__pycache__/*
+
+blog_setting/migrations/*
+blog_setting/__pycache__/*
+
+templates/*
+
+blog_server/__pycache__/*
+blog_user/serializer/__pycache__/*
+media/*
+utils/recursion_data/__pycache__/*
+utils/permission/__pycache__/*
+test.py

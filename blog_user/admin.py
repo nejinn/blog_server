@@ -15,8 +15,8 @@ class BlogUserAdmin(admin.ModelAdmin):
         'user_level',
         'user_birthday',
         'user_gender',
-        'create_data',
-        'update_data',
+        'create_date',
+        'update_date',
         'is_delete'
     )
 
