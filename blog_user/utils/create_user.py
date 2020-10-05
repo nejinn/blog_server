@@ -24,7 +24,7 @@ class CreateUser(object):
         pic = Image.new("RGB", pic_size, (255, 255, 255))
         draw = ImageDraw.Draw(pic)
         text = username[0]
-        font = ImageFont.truetype(os.path.join(settings.STATICFILES_DIRS[0], 'fonts', '文泉驿微米黑.ttc'), 60,
+        font = ImageFont.truetype(os.path.join(settings.STATICFILES_DIRS[0], 'fonts', 'wqwmh.ttf'), 60,
                                   encoding="uft-8")
         text_width = font.getsize(text)
         text_coordinate = int((pic_size[0] - text_width[0]) / 2), int((pic_size[1] - text_width[1]) / 2)
