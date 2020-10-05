@@ -1,0 +1,3 @@
+class RecursionData(object):
+    pass
+
