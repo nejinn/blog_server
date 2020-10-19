@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from blog_server import settings
 from io import BytesIO
 from django.core.files import File
-
 from blog_user.models import BlogUser
 
 
@@ -46,9 +45,10 @@ class CreateUser(object):
         return 'user-pic/user-id-{}/avator.png'.format(userid)
 
     @classmethod
-    def save_user_pic(cls, username, userid):
+    def save_user_pic(cls, username, userid, request):
         """
         为 给用户保存 头像
+        :param request:
         :param username: 用户名
         :param userid: 用户id
         :return:
@@ -56,6 +56,14 @@ class CreateUser(object):
         user_pic = cls.set_default_user_pic(username)
         blog_user = BlogUser()
         blog_user.base_user_id = userid
+
+        blog_user.create_id = request.user.id
+        blog_user.update_id = request.user.id
+        blog_user.user_type = request.data['user_type']
+        blog_user.user_phone = request.data.get('user_phone')
+        blog_user.user_email = request.data['user_email']
+        blog_user.user_birthday = request.data.get('user_birthday')
+        blog_user.user_gender = request.data['user_gender']
 
         instance_default_pic = os.path.join(settings.MEDIA_ROOT, cls.set_default_user_pic_name(userid))
         if os.path.exists(instance_default_pic):
@@ -73,6 +81,44 @@ class CreateUser(object):
         :return:
         """
         password = make_password(password, salt=None, hasher='default')
-        user = User(username=username, password=password)
+        user = User(username=username, password=password, is_active=False, is_staff=False, is_superuser=False)
         user.save()
         return user
+
+
+class DeleteUser(object):
+
+    @staticmethod
+    def delete_user(user, base_user):
+        """
+        删除用户
+        :param user:  BlogUser 对象
+        :param base_user:  User 对象
+        :return:
+        """
+        user.is_delete = True
+        user.save()
+
+        base_user.is_active = False
+        base_user.is_staff = False
+        # base_user.is_superuser = False
+        base_user.save()
+
+
+class LaunchUser(object):
+
+    @staticmethod
+    def launch_user(user, base_user):
+        """
+        启用
+        :param user:  BlogUser 对象
+        :param base_user:  User 对象
+        :return:
+        """
+        user.is_delete = False
+        user.save()
+
+        base_user.is_active = True
+        if base_user.is_superuser:
+            base_user.is_staff = True
+        base_user.save()
