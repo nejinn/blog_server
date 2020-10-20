@@ -15,7 +15,7 @@ class ResponseDate(object):
         pass
 
     @classmethod
-    def json_data(cls, data={}, service_type=OK, status=200):
+    def json_data(cls, data=None, service_type=OK, status=200):
         """
         返回 response 格式化
         :param service_type: ret 内容
@@ -28,8 +28,10 @@ class ResponseDate(object):
         }
 
         if status not in cls.STATUS_TYPE:
-            result['data'] = STATUS_CODE_ERROR
-        elif data:
+            result['ret'] = STATUS_CODE_ERROR
+        elif isinstance(data, (dict, list)):
             result['data'] = data
+        else:
+            result['data'] = {}
 
         return Response(data=result, status=status)

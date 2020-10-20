@@ -23,8 +23,8 @@ from blog_server import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('blog/api/v1/user/', include(blog_user_routers)),
-    path('blog/api/v1/setting/', include(blog_setting_routers))
+    path('blog/admin/api/v1/user/', include(blog_user_routers)),
+    path('blog/admin/api/v1/setting/', include(blog_setting_routers))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
