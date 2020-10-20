@@ -27,6 +27,7 @@ from rest_framework.decorators import parser_classes
 from rest_framework.parsers import JSONParser
 from django.db.models.query import QuerySet
 from utils.public.get_ip import GetIp
+from django.contrib.auth.hashers import make_password
 
 jwt_response_payload_handler = api_settings.JWT_RESPONSE_PAYLOAD_HANDLER
 
@@ -39,6 +40,7 @@ class UserLoginAPIView(ObtainJSONWebToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
+        print(111)
         if serializer.is_valid():
             user = serializer.object.get('user') or request.user
             token = serializer.object.get('token')
@@ -259,7 +261,10 @@ class CheckUsername(APIView):
         username = request.data.get('username')
         user_id = request.data.get('user_id')
 
-        username_list = User.objects.exclude(id=user_id).values_list('username', flat=True)
+        if user_id is not None:
+            username_list = User.objects.exclude(id=user_id).values_list('username', flat=True)
+        else:
+            username_list = User.objects.all().values_list('username', flat=True)
 
         if username in username_list:
             data = {
@@ -284,11 +289,12 @@ class UserEditorAPIView(APIView):
         username = request.data['username']
         base_user = request.data['base_user']
         user_type = request.data['user_type']
-        user_phone = request.data['user_phone']
+        user_phone = request.data.get('user_phone')
         user_email = request.data['user_email']
         user_level = request.data['user_level']
         user_exp = request.data['user_exp']
         user_gender = request.data['user_gender']
+        user_birthday = request.data['user_birthday']
 
         try:
             with transaction.atomic():
@@ -305,6 +311,7 @@ class UserEditorAPIView(APIView):
                 blog_user_obj.user_level = user_level
                 blog_user_obj.user_exp = user_exp
                 blog_user_obj.user_gender = user_gender
+                blog_user_obj.user_birthday = user_birthday
                 blog_user_obj.save()
 
                 transaction.savepoint_commit(save_id)
@@ -313,4 +320,31 @@ class UserEditorAPIView(APIView):
             print(e)
             return ResponseDate.json_data(service_type=EDITOR_USER_ERROR)
 
+        return ResponseDate.json_data()
+
+
+class AddUserAPIView(APIView):
+    permission_classes = [AdminPermission, ]
+
+    def post(self, request):
+        username = request.data['username']
+        password = request.data['password']
+        if int(request.data['user_type']) not in BlogUser.USER_TYPE_TEXT.keys():
+            return ResponseDate.json_data(service_type=BLOG_ADMIN_CREATE_USER_TYPE_ERROR)
+
+        if int(request.data['user_gender']) not in BlogUser.USER_GENDER_TEXT.keys():
+            return ResponseDate.json_data(service_type=BLOG_ADMIN_CREATE_USER_GENDER_ERROR)
+
+        try:
+            with transaction.atomic():
+                save_id = transaction.savepoint()
+                user = CreateUser.create_base_user(
+                    username, password)
+                CreateUser.save_user_pic(
+                    username=username, userid=user.id, request=request)
+                transaction.savepoint_commit(save_id)
+        except Exception as e:
+            print(e)
+            transaction.savepoint_rollback(save_id)
+            return ResponseDate.json_data(service_type=BLOG_ADMIN_CREATE_USER_ERROR)
         return ResponseDate.json_data()

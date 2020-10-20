@@ -58,4 +58,4 @@ class BlogUser(BaseModel):
     class Meta:
         verbose_name_plural = '用户表'
         verbose_name = '用户表'
-        ordering = ('id',)
+        ordering = ('-id',)
